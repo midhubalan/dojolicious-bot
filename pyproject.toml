@@ -6,5 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "anthropic>=0.57.1",
+    "marimo[recommended]>=0.14.11",
     "python-dotenv>=1.1.1",
 ]
+
+[tool.marimo.runtime]
+dotenv = [".env", ".env.testing"]
