@@ -5,13 +5,18 @@ app = marimo.App()
 
 with app.setup:
     # Initialization code that runs before all other cells
-    from typing import Literal, Iterable
-
-    import marimo as mo
+    from typing import Literal, Iterable, Union, TypedDict
+    from typing_extensions import NotRequired
 
     from anthropic import Anthropic
 
-    AntModel = Literal[
+    from anthropic.types import (
+        MessageParam,
+        # MessageCreateParams,
+        TextBlockParam,
+    )
+
+    ModelParam = Literal[
         "claude-opus-4-0",
         "claude-sonnet-4-0",
         "claude-3-7-sonnet-latest",
@@ -19,9 +24,19 @@ with app.setup:
         "claude-3-5-haiku-latest",
     ]
 
-    MessageKey = Literal["role", "content"]
 
-    Message = dict[MessageKey, str]
+    class MessageCreateParams(TypedDict):
+        model: ModelParam
+        messages: Iterable[MessageParam]
+        max_tokens: int
+        stream: NotRequired[Literal[True, False]]
+        system: NotRequired[Union[str, Iterable[TextBlockParam]]]
+        stop_sequences: NotRequired[list[str]]
+
+
+    # MessageKey = Literal["role", "content"]
+
+    # Message = dict[MessageKey, str]
 
     Role = Literal["user", "assistant"]
 
@@ -33,34 +48,34 @@ class MyChat:
     def __init__(
         self,
         *,
-        model: AntModel = "claude-3-5-haiku-latest",
-        stream: bool = False,
-        system: str | None = None,
-        stop_sequences: list[str] | None = None
+        model: ModelParam = "claude-3-5-haiku-latest",
+        stream: bool = True,
+        system: Union[str, Iterable[TextBlockParam]] | None = None,
+        stop_sequences: list[str] | None = None,
     ) -> None:
-        self._messages = []
+        self._messages: list[MessageParam] = []
         self.client = client
-        self._model = model 
+        self._model = model
         self._stream = stream
         self._system = system
         self._stop_sequences = stop_sequences
 
-    def reset_chat(self)->None:
+    def reset_chat(self) -> None:
         self._messages = []
 
-    def tail(self, n: int = 2) -> list[Message]:
+    def tail(self, n: int = 2) -> list[MessageParam]:
         if len(self._messages) < n:
             return [msg for msg in self._messages]
         else:
             return [msg for msg in self._messages[-n:]]
 
-    def head(self, n: int = 2) -> list[Message]:
+    def head(self, n: int = 2) -> list[MessageParam]:
         if len(self._messages) < n:
             return [msg for msg in self._messages]
         else:
             return [msg for msg in self._messages[:n]]
 
-    def all(self) -> Iterable[Message]:
+    def all(self) -> Iterable[MessageParam]:
         return (msg for msg in self._messages)
 
     def _append_message(self, role: Role, content: str) -> None:
@@ -78,14 +93,14 @@ class MyChat:
         system: str | None = None,
         stop_sequences: list[str] | None = None,
     ):
-        params = {
+        params: MessageCreateParams = {
             "model": self._model,
             "max_tokens": 1024,
             "messages": self._messages,
         }
-        if sys_param := system or self._system :
+        if sys_param := system or self._system:
             params["system"] = sys_param
-        if stop_seq := stop_sequences or self._stop_sequences :
+        if stop_seq := stop_sequences or self._stop_sequences:
             params["stop_sequences"] = stop_seq
         # pyrefly: ignore  # bad-argument-type
         with client.messages.stream(**params) as stream:
@@ -93,7 +108,7 @@ class MyChat:
                 print(text, end="", flush=True)
         message = stream.get_final_message()
         # pyrefly: ignore  # missing-attribute
-        self.add_assistant_message( message.content[0].text)
+        self.add_assistant_message(message.content[0].text)
 
 
 @app.cell
