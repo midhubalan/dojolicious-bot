@@ -6,9 +6,33 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "anthropic>=0.57.1",
-    "marimo[recommended]>=0.14.11",
     "python-dotenv>=1.1.1",
 ]
 
+[tool.pyrefly]
+project-includes = ["**/*"]
+project-excludes = ["**/*venv/**/*"]
+
 [tool.marimo.runtime]
 dotenv = [".env", ".env.testing"]
+
+[dependency-groups]
+dev = [
+    "marimo[lsp,recommended]>=0.14.11",
+    "pyrefly>=0.24.2",
+    "ruff>=0.12.3",
+]
+
+# Language server configuration
+[tool.marimo.language_servers.pylsp]
+enabled = true               # Enable/disable the Python language server
+enable_mypy = true           # Type checking with mypy (enabled by default, if installed)
+enable_ruff = true           # Linting with ruff (enabled by default, if installed)
+enable_flake8 = false        # Linting with flake8
+enable_pydocstyle = false    # Check docstring style
+enable_pylint = false        # Linting with pylint
+enable_pyflakes = false      # Syntax checking with pyflakes
+
+# Diagnostics configuration
+[tool.marimo.diagnostics]
+enabled = true               # Show diagnostics in the editor
