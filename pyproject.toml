@@ -9,19 +9,21 @@ dependencies = [
     "python-dotenv>=1.1.1",
 ]
 
-[tool.pyrefly]
-project-includes = ["**/*"]
-project-excludes = ["**/*venv/**/*"]
-
-[tool.marimo.runtime]
-dotenv = [".env", ".env.testing"]
-
 [dependency-groups]
 dev = [
     "marimo[lsp,recommended]>=0.14.11",
     "pyrefly>=0.24.2",
     "ruff>=0.12.3",
 ]
+
+[tool.pyrefly]
+project-includes = ["**/*"]
+project-excludes = ["**/*venv/**/*"]
+
+[tool.marimo.runtime]
+dotenv = [".env", ".env.testing"]
+auto_instantiate = false
+on_cell_change = "lazy"
 
 # Language server configuration
 [tool.marimo.language_servers.pylsp]
@@ -36,3 +38,7 @@ enable_pyflakes = false      # Syntax checking with pyflakes
 # Diagnostics configuration
 [tool.marimo.diagnostics]
 enabled = true               # Show diagnostics in the editor
+
+[tool.marimo.display]
+theme = "dark"
+cell_output = "below"

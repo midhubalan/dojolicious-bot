@@ -47,7 +47,7 @@ class MyChat:
 
     def reset_chat(self)->None:
         self._messages = []
-        
+
     def tail(self, n: int = 2) -> list[Message]:
         if len(self._messages) < n:
             return [msg for msg in self._messages]
@@ -87,7 +87,6 @@ class MyChat:
             params["system"] = sys_param
         if stop_seq := stop_sequences or self._stop_sequences :
             params["stop_sequences"] = stop_seq
-
         # pyrefly: ignore  # bad-argument-type
         with client.messages.stream(**params) as stream:
             for text in stream.text_stream:
@@ -127,12 +126,6 @@ def _(quantum_chat):
 
 
 @app.cell
-def _(quantum_chat):
-    [i for i in quantum_chat.all()]
-    return
-
-
-@app.cell
 def _():
     code_chat = MyChat( system="""
     You're a helpful coding assistant. 
@@ -160,17 +153,6 @@ def _():
     struct_chat.add_user_message("Write a three different gcloud cli commands. Each should be very short")
     struct_chat.add_assistant_message("Here are all three commands with no comments in a single code block:\n```bash")
     struct_chat.send_messages(stop_sequences=["```"])
-    return (struct_chat,)
-
-
-@app.cell
-def _(struct_chat):
-    [m for m in struct_chat.all()]
-    return
-
-
-@app.cell
-def _():
     return
 
 
