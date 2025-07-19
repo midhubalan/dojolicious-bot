@@ -6,12 +6,10 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "anthropic>=0.57.1",
-    "python-dotenv>=1.1.1",
 ]
 
 [dependency-groups]
 dev = [
-    "marimo[lsp,recommended]>=0.14.11",
     "pyrefly>=0.24.2",
     "ruff>=0.12.3",
 ]
