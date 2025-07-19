@@ -96,9 +96,9 @@ class AntChat:
             params["stop_sequences"] = stop_seq
         # pyrefly: ignore  # bad-argument-type
         with self._client.messages.stream(**params) as stream:
-            for text in stream.text_stream:
-                print(text, end="", flush=True)
-        message = stream.get_final_message()
+            # for text in stream.text_stream:
+            #     print(text, end="", flush=True)
+            message = stream.get_final_message()
         # pyrefly: ignore  # missing-attribute
         self.add_assistant_message(message.content[0].text)
 
