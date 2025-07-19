@@ -1,6 +1,7 @@
 # Initialization code that runs before all other cells
-from typing import Literal, Iterable, Union, TypedDict
-from typing_extensions import NotRequired, Required
+from typing import Iterable, Union
+
+from ._types import Role, MessageCreateParams, ModelParam, Content
 
 from anthropic import Anthropic
 
@@ -9,25 +10,6 @@ from anthropic.types import (
     # MessageCreateParams,
     TextBlockParam,
 )
-
-ModelParam = Literal[
-    "claude-opus-4-0",
-    "claude-sonnet-4-0",
-    "claude-3-7-sonnet-latest",
-    "claude-3-5-sonnet-latest",
-    "claude-3-5-haiku-latest",
-]
-
-
-class MessageCreateParams(TypedDict):
-    model: ModelParam
-    messages: Iterable[MessageParam]
-    max_tokens: int
-    stream: NotRequired[Literal[True, False]]
-    system: NotRequired[Union[str, Iterable[TextBlockParam]]]
-    stop_sequences: NotRequired[list[str]]
-
-Role = Literal["user", "assistant"]
 
 client = Anthropic()
 
@@ -63,20 +45,20 @@ class AntChat:
         else:
             return [msg for msg in self._messages[:n]]
 
-    def _get_last_message_content(self, role:Role)-> str | None:
+    def _get_last_message_content(self, role: Role) -> Content:
         if len(self._messages) == 0:
             raise LookupError("no messages in chat")
         for msg in self._messages[::-1]:
-            if msg["role"] == role :
+            if msg["role"] == role:
                 return msg["content"]
-        return None 
+        raise LookupError("no prompt or response found in chat")
 
-    def get_last_prompt(self) -> str | None:
-        return self._get_last_message_content('user')
+    def get_last_prompt(self) -> Content:
+        return self._get_last_message_content("user")
 
-    def get_last_response(self) -> str | None:
-        return self._get_last_message_content('assistant')
-        
+    def get_last_response(self) -> Content:
+        return self._get_last_message_content("assistant")
+
     def all(self) -> Iterable[MessageParam]:
         return (msg for msg in self._messages)
 
@@ -112,15 +94,20 @@ class AntChat:
         # pyrefly: ignore  # missing-attribute
         self.add_assistant_message(message.content[0].text)
 
+
 def main():
     struct_chat = AntChat()
-    struct_chat.add_user_message("Write a three different gcloud cli commands. Each should be very short")
-    struct_chat.add_assistant_message("Here are all three commands with no comments in a single code block:\n```bash")
+    struct_chat.add_user_message(
+        "Write a three different gcloud cli commands. Each should be very short"
+    )
+    struct_chat.add_assistant_message(
+        "Here are all three commands with no comments in a single code block:\n```bash"
+    )
     struct_chat.send_messages(stop_sequences=["```"])
-
 
     print(struct_chat.get_last_response())
     print(struct_chat.get_last_prompt())
+
 
 if __name__ == "__main__":
     main()
