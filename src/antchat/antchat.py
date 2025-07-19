@@ -1,7 +1,8 @@
 # Initialization code that runs before all other cells
 from typing import Iterable, Union
 
-from ._types import Role, MessageCreateParams, ModelParam, Content
+from dotenv import load_dotenv
+import os
 
 from anthropic import Anthropic
 
@@ -11,7 +12,14 @@ from anthropic.types import (
     TextBlockParam,
 )
 
-client = Anthropic()
+from .types import Role, MessageCreateParams, ModelParam, Content
+
+load_dotenv()
+my_api_key = os.getenv("ANTHROPIC_API_KEY")
+
+client = Anthropic(
+    api_key=my_api_key
+)
 
 
 class AntChat:
