@@ -54,13 +54,13 @@ class MyChat:
         stop_sequences: list[str] | None = None,
     ) -> None:
         self._messages: list[MessageParam] = []
-        self.client = client
+        self._client = client
         self._model = model
         self._stream = stream
         self._system = system
         self._stop_sequences = stop_sequences
 
-    def reset_chat(self) -> None:
+    def reset(self) -> None:
         self._messages = []
 
     def tail(self, n: int = 2) -> list[MessageParam]:
@@ -75,6 +75,20 @@ class MyChat:
         else:
             return [msg for msg in self._messages[:n]]
 
+    def _get_last_message_content(self, role:Role)-> str | None:
+        if len(self._messages) == 0:
+            raise LookupError("no messages in chat")
+        for msg in self._messages[::-1]:
+            if msg["role"] == role :
+                return msg["content"]
+        return None 
+
+    def get_last_prompt(self) -> str | None:
+        return self._get_last_message_content('user')
+
+    def get_last_response(self) -> str | None:
+        return self._get_last_message_content('assistant')
+        
     def all(self) -> Iterable[MessageParam]:
         return (msg for msg in self._messages)
 
@@ -103,7 +117,7 @@ class MyChat:
         if stop_seq := stop_sequences or self._stop_sequences:
             params["stop_sequences"] = stop_seq
         # pyrefly: ignore  # bad-argument-type
-        with client.messages.stream(**params) as stream:
+        with self._client.messages.stream(**params) as stream:
             for text in stream.text_stream:
                 print(text, end="", flush=True)
         message = stream.get_final_message()
@@ -168,6 +182,18 @@ def _():
     struct_chat.add_user_message("Write a three different gcloud cli commands. Each should be very short")
     struct_chat.add_assistant_message("Here are all three commands with no comments in a single code block:\n```bash")
     struct_chat.send_messages(stop_sequences=["```"])
+    return (struct_chat,)
+
+
+@app.cell
+def _(struct_chat):
+    struct_chat.get_last_response()
+    # struct_chat.last_response()
+    return
+
+
+@app.cell
+def _():
     return
 
 
