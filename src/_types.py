@@ -16,8 +16,6 @@ from anthropic.types import (
 )
 
 
-
-
 Role = Literal["user", "assistant"]
 
 ModelParam = Literal[
@@ -45,6 +43,7 @@ Content = Union[
         ]
     ],
 ]
+
 
 class MessageCreateParams(TypedDict):
     model: ModelParam

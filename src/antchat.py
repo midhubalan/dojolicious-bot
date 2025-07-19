@@ -98,10 +98,16 @@ class AntChat:
 def main():
     struct_chat = AntChat()
     struct_chat.add_user_message(
-        "Write a three different gcloud cli commands. Each should be very short"
+        (
+            "Write a three different gcloud cli commands. "
+            "Each should be very short"
+        )
     )
     struct_chat.add_assistant_message(
-        "Here are all three commands with no comments in a single code block:\n```bash"
+        (
+            "Here are all three commands with no comments "
+            "in a single code block:\n```bash"
+        )
     )
     struct_chat.send_messages(stop_sequences=["```"])
 
