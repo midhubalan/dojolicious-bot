@@ -1,5 +1,5 @@
 from typing import Literal, Iterable, TypedDict, Union
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Required
 
 from anthropic.types import (
     MessageParam,
@@ -52,3 +52,13 @@ class MessageCreateParams(TypedDict):
     stream: NotRequired[Literal[True, False]]
     system: NotRequired[Union[str, Iterable[TextBlockParam]]]
     stop_sequences: NotRequired[list[str]]
+
+
+class Task(TypedDict):
+    task: Required[str]
+
+
+class EvalRecord(TypedDict):
+    output: Content
+    test_case: Task
+    score: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
