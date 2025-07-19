@@ -1,6 +1,6 @@
 from typing import Iterable
 from .antchat import AntChat
-from ._types import Task, Content, EvalRecord
+from .types import Task, Content, EvalRecord
 
 
 class EvalRunner:
