@@ -1,7 +1,8 @@
 import json
 from typing import Iterable
 from antchat import AntChat 
-from types import Task, EvalRecord
+from evalrunner import EvalRunner
+from chattypehelpers import Task, EvalRecord
 
 def generate_dataset():
     prompt = (
@@ -40,10 +41,21 @@ if __name__ == "__main__":
         json.dump(dataset, f, indent=2)
     with open("dataset.json", "r") as f:
         dataset = json.load(f)
-    if isinstance(dataset, list):
-        if all([isinstance(item, dict) for item in dataset]):
-            if all([ 'task' in item for item in dataset]):
-                if all([isinstance(item['task'], str) for item in dataset]):
-                    cases: Iterable[Task] = dataset
+    if isinstance(dataset, Iterable):
+        # if all([isinstance(item, dict) for item in dataset]):
+            # if all([ 'task' in item for item in dataset]):
+        if all([isinstance(item['task'], str) for item in dataset]):
+                cases: Iterable[Task] = dataset
 
-    results = cases
+    eval_prompt = """
+    Please solve the following task:
+    
+    {task}
+    """
+    evals = EvalRunner(
+        prompt = eval_prompt,
+        cases = cases
+    )
+    evals.run_evals()
+    print(json.dumps([eval for eval in evals.get_evals() ], indent=2))
+

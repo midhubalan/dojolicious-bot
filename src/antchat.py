@@ -12,7 +12,7 @@ from anthropic.types import (
     TextBlockParam,
 )
 
-from .types import Role, MessageCreateParams, ModelParam, Content
+from chattypehelpers import Role, MessageCreateParams, ModelParam, Content
 
 load_dotenv()
 my_api_key = os.getenv("ANTHROPIC_API_KEY")
