@@ -103,25 +103,25 @@ class AntChat:
         self.add_assistant_message(message.content[0].text)
 
 
-# def main():
-#     struct_chat = AntChat()
-#     struct_chat.add_user_message(
-#         (
-#             "Write a three different gcloud cli commands. "
-#             "Each should be very short"
-#         )
-#     )
-#     struct_chat.add_assistant_message(
-#         (
-#             "Here are all three commands with no comments "
-#             "in a single code block:\n```bash"
-#         )
-#     )
-#     struct_chat.send_messages(stop_sequences=["```"])
+def main():
+    struct_chat = AntChat()
+    struct_chat.add_user_message(
+        (
+            "Write a three different gcloud cli commands. "
+            "Each should be very short"
+        )
+    )
+    struct_chat.add_assistant_message(
+        (
+            "Here are all three commands with no comments "
+            "in a single code block:\n```bash"
+        )
+    )
+    struct_chat.send_messages(stop_sequences=["```"])
 
-#     print(struct_chat.get_last_response())
-#     print(struct_chat.get_last_prompt())
+    print(struct_chat.get_last_response())
+    print(struct_chat.get_last_prompt())
 
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
